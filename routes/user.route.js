@@ -12,7 +12,7 @@ router.post('/register' , controller.register);
 // @access  public
 
 
-// router.post('/login' , controller.login); 
+  router.post('/login' , controller.login); 
 
 
 

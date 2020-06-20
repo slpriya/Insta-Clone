@@ -17,24 +17,26 @@ module.exports = {
   login: (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
+    User.findOne({ email })
+      .then((user) => {
+        if (!user) {
+           return res.status(401).json({ email: "User not found" });
+        }
+        user.comparePassword(password, (err, isMatch) => {
+          if (err) throw err;
+          if (isMatch) return res.json({ message: 'Successfully compared' });
+          return res.status(400).json({ message: 'Password Incorrect!' });
+        })
+      }).catch( err =>{ 
+        return res.status(500).json({message : `Internal error occured ${err.message}`});
+      });//login ends here
 
-    User.findOne( {email} )
-        .then( (user) =>{
-          if(!user) {
-            return res.status(401).json({ email: "User not found" });
-          }
-
-          
-          
-        }).catch()
-  }
-
-
+    }
 }
 
 function processRequest(user, req, res) {
   if (user) {
-      return res.status(400)
+    return res.status(400)
       .json({ Success: false, Message: "Registered Email already exists" });
   }
   createUser(req, res);
