@@ -1,5 +1,6 @@
 const User = require('../models/User.model');
 const gravatar = require('gravatar');//import gravatar
+const issueJWT = require('../lib/utils');
 
 module.exports = {
   register: (req, res) => {
@@ -17,25 +18,38 @@ module.exports = {
   login: (req, res) => {
     const email = req.body.email;
     const password = req.body.password;
-
-    User.findOne( {email} )
-        .then( (user) =>{
-          if(!user) {
-            return res.status(401).json({ email: "User not found" });
+    User.findOne({ email })
+      .then((user) => {
+        if (!user) {
+           return res.status(401).json({ email: "User not found" });
+        }
+        user.comparePassword(password, (err, isMatch) => {
+          if (err) throw err;
+          if (isMatch){
+            const jwtToken = issueJWT(user);
+            return res.send(jwtToken);
           }
+          return res.status(400).json({ message: 'Password Incorrect!' });
+        })
+      }).catch( err =>{ 
+        return res.status(500).json({message : `Internal error occured ${err.message}`});
+      });//login ends here
 
-          
-          
-        }).catch()
-  }
+    },
+    current : (req,res) => {
 
-
+      return res.json({ 
+        success : true,
+        message : 'Authorized',
+        user : req.user
+      });
+    }
 }
 
 function processRequest(user, req, res) {
   if (user) {
-      return res.status(400)
-      .json({ Success: false, Message: "Registered Email already exists" });
+    return res.status(400)
+      .json({ success: false, message: "Registered Email already exists" });
   }
   createUser(req, res);
 }
