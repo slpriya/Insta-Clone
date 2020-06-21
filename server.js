@@ -3,10 +3,13 @@ const app = express();
 const users = require('./routes/user.route');
 const bodyparser = require('body-parser');
 const port = require('./config/keys').port;
+const passport = require('passport');
 
 require('./config/database');
 app.use(bodyparser.urlencoded({extended : false}));
 app.use(bodyparser.json());
+
+app.use(passport.initialize());
 
 // Homepage route
 app.get('/', (req, res) => res.send('Aperture'));

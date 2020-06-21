@@ -1,5 +1,6 @@
 const User = require('../models/User.model');
 const gravatar = require('gravatar');//import gravatar
+const issueJWT = require('../lib/utils');
 
 module.exports = {
   register: (req, res) => {
@@ -24,7 +25,11 @@ module.exports = {
         }
         user.comparePassword(password, (err, isMatch) => {
           if (err) throw err;
-          if (isMatch) return res.json({ message: 'Successfully compared' });
+          if (isMatch){
+
+            const jwtToken = issueJWT(user);
+            return res.send(jwtToken );
+          }
           return res.status(400).json({ message: 'Password Incorrect!' });
         })
       }).catch( err =>{ 
@@ -37,7 +42,7 @@ module.exports = {
 function processRequest(user, req, res) {
   if (user) {
     return res.status(400)
-      .json({ Success: false, Message: "Registered Email already exists" });
+      .json({ success: false, message: "Registered Email already exists" });
   }
   createUser(req, res);
 }
