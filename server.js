@@ -10,6 +10,7 @@ app.use(bodyparser.urlencoded({extended : false}));
 app.use(bodyparser.json());
 
 app.use(passport.initialize());
+require('./config/passport')(passport);
 
 // Homepage route
 app.get('/', (req, res) => res.send('Aperture'));

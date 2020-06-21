@@ -26,9 +26,8 @@ module.exports = {
         user.comparePassword(password, (err, isMatch) => {
           if (err) throw err;
           if (isMatch){
-
             const jwtToken = issueJWT(user);
-            return res.send(jwtToken );
+            return res.send(jwtToken);
           }
           return res.status(400).json({ message: 'Password Incorrect!' });
         })
@@ -36,6 +35,14 @@ module.exports = {
         return res.status(500).json({message : `Internal error occured ${err.message}`});
       });//login ends here
 
+    },
+    current : (req,res) => {
+
+      return res.json({ 
+        success : true,
+        message : 'Authorized',
+        user : req.user
+      });
     }
 }
 
